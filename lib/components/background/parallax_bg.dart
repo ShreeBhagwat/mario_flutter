@@ -1,16 +1,23 @@
+import 'dart:async';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame/input.dart';
 import 'package:flame/parallax.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:mario_flutter/components/collision_block/collision_block.dart';
+import 'package:mario_flutter/components/items/icons.dart';
 import 'package:mario_flutter/components/player/mario.dart';
 import 'package:mario_flutter/mario_run.dart';
 
 class ParallaxBg extends Component
     with HasGameRef<MarioRun>, CollisionCallbacks {
   final Mario mario;
-  // final List enemies;
+  final IconsPoints iconPoints;
+  TextComponent? scoreTextComponent;
+  SpriteButtonComponent? pauseButton;
 
   ParallaxComponent? parallaxComponent;
   List<CollisionBlock> collisionBlocks = [];
@@ -20,18 +27,53 @@ class ParallaxBg extends Component
     super.priority,
     super.key,
     required this.mario,
-    // required this.enemies
+    required this.iconPoints,
   });
 
   @override
   Future<void> onLoad() async {
     priority = -2;
-    // debugMode = true;
     final parallax = await _loadParallaxBackground();
     _addCollisionPlatform();
 
-    addAll([parallax, mario]);
+    scoreTextComponent = TextComponent(
+      position: Vector2(game.size.x - 20, 30),
+      text: game.scrore.toString(),
+      textRenderer: TextPaint(
+        style: const TextStyle(
+            color: Colors.white, fontSize: 30, fontFamily: 'super_mario'),
+      ),
+    );
+    scoreTextComponent!.anchor = Anchor.topRight;
+    initPauseButton();
+
+    addAll([parallax, mario, scoreTextComponent!, pauseButton!, iconPoints]);
+
     return super.onLoad();
+  }
+
+  void initPauseButton() {
+    pauseButton = SpriteButtonComponent(
+      button: game.isPaused
+          ? Sprite(game.images.fromCache('items/play.png'))
+          : Sprite(game.images.fromCache('items/pause.png')),
+      position: Vector2(0, 50),
+      size: Vector2(50, 50),
+      onPressed: () {
+        if (!game.playSounds) {
+          FlameAudio.play('pause.wav', volume: game.soundVolume);
+        }
+        if (game.isPaused) {
+          game.isPaused = false;
+          game.resumeEngine();
+        } else {
+          game.isPaused = true;
+          game.pauseEngine();
+        }
+        // game.overlays.add('MainMenu');
+      },
+    );
+    pauseButton!.anchor = Anchor.topLeft;
   }
 
   Future<ParallaxComponent> _loadParallaxBackground() async {
@@ -64,6 +106,13 @@ class ParallaxBg extends Component
     return parallaxComponent!;
   }
 
+  @override
+  void update(double dt) {
+    game.scrore += 1.toInt();
+    scoreTextComponent!.text = game.scrore.toString();
+    super.update(dt);
+  }
+
   void _addCollisionPlatform() {
     final imageLayer = parallaxComponent!.parallax!.layers.last;
 
@@ -79,18 +128,7 @@ class ParallaxBg extends Component
   }
 
   @override
-  void update(double dt) {
-    // mario.isMoving ? baseVelocity = mario.moveSpeed: baseVelocity = 10;
-    // parallaxComponent!.parallax!.baseVelocity.setFrom(Vector2(baseVelocity, 0));
-
-    super.update(dt);
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
   }
-
-  // @override
-  // void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-  //   if (other is Mario) {
-  //     mario.x = game.size.x - mario.width;
-  //   }
-  //   super.onCollision(intersectionPoints, other);
-  // }
 }

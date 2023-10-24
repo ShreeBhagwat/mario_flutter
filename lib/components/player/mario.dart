@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/services.dart';
 import 'package:mario_flutter/components/collision_block/collision_block.dart';
 import 'package:mario_flutter/components/enemy/enemy.dart';
+import 'package:mario_flutter/components/items/icons.dart';
 import 'package:mario_flutter/mario_run.dart';
 import 'package:mario_flutter/utils.dart';
 
@@ -30,16 +32,18 @@ class Mario extends SpriteAnimationGroupComponent
   final double stepTime = 0.2;
 
   final double _gravity = 9.8;
-  final double _jumpForce = 400;
+  final double _jumpForce = 350;
   final double terminalVelocity = 630;
   int horizontalMovement = 0;
   final double moveSpeed = 200;
+  static const bounceHeight = 300.0;
 
   bool gothitByEnemy = false;
   bool isOnGround = false;
   bool hasJumped = false;
   bool isMoving = false;
   bool isDucking = false;
+  bool isBounce = false;
 
   List<CollisionBlock> collisionBlocks = [];
 
@@ -68,9 +72,12 @@ class Mario extends SpriteAnimationGroupComponent
       _updateMarioState();
       _updatePlayerMovement(dt);
       _applyVerticalCollision();
-      // _applyHorizontalCollision();
-
       _applyGravity(dt);
+    }
+
+    if (current == MarioState.disapear) {
+      game.pauseEngine();
+      game.overlays.add('GameOverMenu');
     }
 
     super.update(dt);
@@ -150,22 +157,34 @@ class Mario extends SpriteAnimationGroupComponent
   }
 
   @override
-  void onCollision(
-      Set<Vector2> intersectionPoints, PositionComponent other) async {
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Enemy) {
       if (isOnGround && other.current == EnemyState.walking) {
         gothitByEnemy = true;
+
         current = MarioState.dead;
         current = MarioState.disapear;
-        await Future.delayed(const Duration(milliseconds: 400), () {
+        if (game.playSounds) {
+          FlameAudio.play('mariodie.wav', volume: game.soundVolume);
+        }
+        Future.delayed(const Duration(milliseconds: 400), () {
           removeFromParent();
         });
       } else if (other.current == EnemyState.walking &&
           !isOnGround &&
           other.selectedEnemyData!.willDie) {
+        velocity.y = -bounceHeight;
+        if (game.playSounds) {
+          FlameAudio.play('enemy_death.wav', volume: game.soundVolume);
+        }
         other.current = EnemyState.dead;
         other.removeEnemy(other);
       }
+    } else if (other is IconsPoints) {
+      if (game.playSounds) {
+        FlameAudio.play('coin_collect.wav', volume: game.soundVolume);
+      }
+      other.removeIcon();
     }
     super.onCollision(intersectionPoints, other);
   }
@@ -209,6 +228,9 @@ class Mario extends SpriteAnimationGroupComponent
   }
 
   void _marioJumped(double dt) {
+    if (game.playSounds) {
+      FlameAudio.play('jump.wav', volume: game.soundVolume);
+    }
     velocity.y = -_jumpForce;
     position.y += velocity.y * dt;
     hasJumped = false;

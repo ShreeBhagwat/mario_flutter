@@ -107,7 +107,6 @@ class Enemy extends SpriteAnimationGroupComponent
         deadTo: 2,
         hitBoxHeight: 20,
         hitBoxWidth: 50,
-
         moveSpeed: 200,
         willDie: false,
         isFlying: true),
@@ -179,7 +178,9 @@ class Enemy extends SpriteAnimationGroupComponent
   }
 
   void removeEnemy(Enemy enemy) async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(
+      const Duration(seconds: 1),
+    );
     enemy.removeFromParent();
   }
 

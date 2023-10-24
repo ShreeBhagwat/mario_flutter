@@ -7,7 +7,7 @@ class CollisionBlock extends PositionComponent {
     this.isPlatform = false,
     this.isEnemy = false,
     this.isObstacle = false,
-    this.isPoint = false,
+    this.isCoin = false,
     this.isPowerUp = false,
   }) : super(position: position, size: size) {
     debugMode = true;
@@ -16,6 +16,6 @@ class CollisionBlock extends PositionComponent {
   bool isPlatform;
   bool isEnemy;
   bool isObstacle;
-  bool isPoint;
+  bool isCoin;
   bool isPowerUp;
 }
