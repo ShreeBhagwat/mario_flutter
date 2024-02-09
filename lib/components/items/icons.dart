@@ -23,7 +23,7 @@ class IconsPoints extends SpriteAnimationGroupComponent
 
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    debugMode = false;
     priority = 2;
     loadAnimation();
     add(RectangleHitbox(
@@ -87,7 +87,7 @@ class IconsPoints extends SpriteAnimationGroupComponent
   }
 
   void removeIcon() {
-    game.scrore += 10;
+    game.score += 10;
     current = IconState.disapear;
     Future.delayed(const Duration(milliseconds: 200), () {
       removeFromParent();

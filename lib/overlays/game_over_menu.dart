@@ -22,21 +22,16 @@ class GameOverMenu extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                marioRun.overlays.remove('GameOverMenu');
-                // marioRun.reset();
-                marioRun.resumeEngine();
-              },
-              child: const Text('Restart'),
+             Text(
+              marioRun.score.toString(),
+              style: const TextStyle(
+                fontSize: 48,
+                fontFamily: 'super_mario',
+                color: Colors.white,
+              ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                marioRun.overlays.remove('GameOverMenu');
-              },
-              child: const Text('Back to Menu'),
-            ),
+
+           
           ],
         ),
       ),

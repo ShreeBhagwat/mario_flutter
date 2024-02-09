@@ -127,7 +127,7 @@ class Enemy extends SpriteAnimationGroupComponent
         collisionType: CollisionType.passive,
       ),
     );
-    debugMode = true;
+    debugMode = false;
     _loadAnimation(selectedEnemyData!);
     addCollision();
     return super.onLoad();

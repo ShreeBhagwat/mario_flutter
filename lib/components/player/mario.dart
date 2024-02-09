@@ -32,7 +32,7 @@ class Mario extends SpriteAnimationGroupComponent
   final double stepTime = 0.2;
 
   final double _gravity = 9.8;
-  final double _jumpForce = 350;
+  final double _jumpForce = 370;
   final double terminalVelocity = 630;
   int horizontalMovement = 0;
   final double moveSpeed = 200;
@@ -156,17 +156,33 @@ class Mario extends SpriteAnimationGroupComponent
     }
   }
 
+  void restartMario() {
+    addToParent(game);
+    width = 70;
+    height = 70;
+    x = 100;
+    y = 100;
+  }
+
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Enemy) {
-      if (isOnGround && other.current == EnemyState.walking) {
+      if (!other.selectedEnemyData!.willDie) {
         gothitByEnemy = true;
-
         current = MarioState.dead;
         current = MarioState.disapear;
-        if (game.playSounds) {
-          FlameAudio.play('mariodie.wav', volume: game.soundVolume);
-        }
+        FlameAudio.bgm.stop();
+
+        Future.delayed(const Duration(milliseconds: 400), () {
+          removeFromParent();
+        });
+      }
+      if (isOnGround && other.current == EnemyState.walking) {
+        gothitByEnemy = true;
+        current = MarioState.dead;
+        current = MarioState.disapear;
+        FlameAudio.bgm.stop();
+
         Future.delayed(const Duration(milliseconds: 400), () {
           removeFromParent();
         });

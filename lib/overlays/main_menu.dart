@@ -1,3 +1,4 @@
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:mario_flutter/mario_run.dart';
 
@@ -27,6 +28,10 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 marioRun.overlays.remove('MainMenu');
                 marioRun.resumeEngine();
+                if (marioRun.playSounds) {
+                  FlameAudio.bgm.play('mario_theme.mp3',
+                      volume: marioRun.soundVolume * 0.7);
+                }
               },
               child: const Text('Start'),
             ),

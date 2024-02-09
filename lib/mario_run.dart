@@ -12,20 +12,17 @@ class MarioRun extends FlameGame
   final Mario mario = Mario();
   final IconsPoints icons = IconsPoints();
 
-  bool playSounds = false;
+  bool playSounds = true;
   double soundVolume = 1.0;
-  int scrore = 000;
+  int score = 000;
   int coin = 00;
   bool isPaused = false;
 
   @override
   FutureOr<void> onLoad() async {
+    FlameAudio.bgm.initialize();
     pauseEngine();
     await images.loadAllImages();
-    
-    if (playSounds) {
-      FlameAudio.play('mario_theme.mp3', volume: soundVolume * 0.7);
-    }
 
     final parallaxComponent = ParallaxBg(
       mario: mario,

@@ -10,7 +10,7 @@ class CollisionBlock extends PositionComponent {
     this.isCoin = false,
     this.isPowerUp = false,
   }) : super(position: position, size: size) {
-    debugMode = true;
+    debugMode = false;
   }
 
   bool isPlatform;

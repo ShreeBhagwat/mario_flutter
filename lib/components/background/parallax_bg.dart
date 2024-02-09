@@ -38,7 +38,7 @@ class ParallaxBg extends Component
 
     scoreTextComponent = TextComponent(
       position: Vector2(game.size.x - 20, 30),
-      text: game.scrore.toString(),
+      text: game.score.toString(),
       textRenderer: TextPaint(
         style: const TextStyle(
             color: Colors.white, fontSize: 30, fontFamily: 'super_mario'),
@@ -47,7 +47,10 @@ class ParallaxBg extends Component
     scoreTextComponent!.anchor = Anchor.topRight;
     initPauseButton();
 
-    addAll([parallax, mario, scoreTextComponent!, pauseButton!, iconPoints]);
+    addAll([
+      parallax, mario,
+       scoreTextComponent!, pauseButton!, iconPoints
+    ]);
 
     return super.onLoad();
   }
@@ -108,8 +111,8 @@ class ParallaxBg extends Component
 
   @override
   void update(double dt) {
-    game.scrore += 1.toInt();
-    scoreTextComponent!.text = game.scrore.toString();
+    game.score += 1.toInt();
+    scoreTextComponent!.text = game.score.toString();
     super.update(dt);
   }
 
